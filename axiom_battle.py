@@ -22,7 +22,7 @@ from pathlib import Path
 # ── 内部模块 ──────────────────────────────────────────────────────────────
 import sys
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from wukong_causality.causal_arbitrator import ConflictResolver, AxiomClaim, ConflictType
+from causal_arbitrator import ConflictResolver, AxiomClaim, ConflictType
 
 # ── 公理元数据 ─────────────────────────────────────────────────────────────
 AXIOM_NAMES = {
