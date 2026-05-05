@@ -1,1 +1,57 @@
-"""\naxiom-battle-api — WuDao Axiom Battle REST API\n"""\nfrom flask import Flask, jsonify, request\nfrom causal_arbitrator import CausalArbitrator\nfrom axiom_battle import AxiomBattle\nimport os\n\napp = Flask(__name__)\nca = CausalArbitrator()\nab = AxiomBattle()\n\n@app.route("/")\ndef index():\n    return jsonify({\n        "name": "WuDao Axiom Battle API",\n        "version": "1.0",\n        "endpoints": ["/battle", "/arena", "/health"]\n    })\n\n@app.route("/battle", methods=["POST"])\ndef battle():\n    data = request.get_json() or {}\n    axiom_a = data.get("axiom_a", "叙事")\n    axiom_b = data.get("axiom_b", "自由")\n    attack_type = data.get("attack_type", "reverse")\n\n    attacker = ab.axioms.get(axiom_a)\n    defender = ab.axioms.get(axiom_b)\n\n    if not attacker or not defender:\n        return jsonify({"error": "Axiom not found"}), 404\n\n    result = ab.battle(attacker, defender, attack_type)\n    return jsonify({\n        "attacker": axiom_a,\n        "defender": axiom_b,\n        "attack_type": attack_type,\n        "verdict": result.verdict.value,\n        "attack_frame": result.attack_frame,\n        "defense_frame": result.defense_frame,\n        "causal_chain": result.causal_chain\n    })\n\n@app.route("/arena", methods=["GET"])\ndef arena():\n    return jsonify(ab.get_arena_state())\n\n@app.route("/health", methods=["GET"])\ndef health():\n    return "OK", 200, {"Content-Type": "text/plain"}\n\nif __name__ == "__main__":\n    port = int(os.environ.get("PORT", 5000))\n    app.run(host="0.0.0.0", port=port)\n
+"""
+axiom-battle-api — WuDao Axiom Battle REST API
+"""
+from flask import Flask, jsonify, request
+from causal_arbitrator import ConflictResolver, AxiomClaim
+from axiom_battle import AxiomBattle
+import os
+
+app = Flask(__name__)
+resolver = ConflictResolver()
+ab = AxiomBattle()
+
+
+@app.route("/")
+def index():
+    return jsonify({
+        "name": "WuDao Axiom Battle API",
+        "version": "1.0",
+        "endpoints": ["/battle", "/arena", "/health"]
+    })
+
+
+@app.route("/battle", methods=["POST"])
+def battle():
+    data = request.get_json() or {}
+    axiom_a = data.get("axiom_a", 5)
+    axiom_b = data.get("axiom_b", 7)
+    attack_type = data.get("attack_type", "inverse")
+
+    try:
+        axiom_a = int(axiom_a)
+        axiom_b = int(axiom_b)
+    except (ValueError, TypeError):
+        return jsonify({"error": "axiom_a and axiom_b must be integers (1-8)"}), 400
+
+    result = ab.run_full_cycle((axiom_a, axiom_b))
+    return jsonify({
+        "axiom_pair": list(result.axiom_pair),
+        "judgment": result.judgment.name,
+        "judgment_reason": result.judgment_reason,
+        "strengthen_or_weaken_ratio": result.strengthen_or_weaken_ratio,
+    })
+
+
+@app.route("/arena", methods=["GET"])
+def arena():
+    return jsonify(ab.status())
+
+
+@app.route("/health", methods=["GET"])
+def health():
+    return "OK", 200, {"Content-Type": "text/plain"}
+
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))
+    app.run(host="0.0.0.0", port=port)
