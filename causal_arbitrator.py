@@ -11,8 +11,7 @@ wukong_causality/causal_arbitrator.py — 公理冲突仲裁器
 仲裁不是为了消除冲突，而是让冲突被有意识地解决。
 
 用法：
-    from wukong_causality.causal_arbitrator import ConflictResolver, AxiomClaim
-
+    
     claims = [
         AxiomClaim(5, 'concentrate', 'peak', 0.95),
         AxiomClaim(7, 'dissipate', 'max_freedom', 0.88),
