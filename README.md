@@ -2,31 +2,28 @@
 
 WuDao Axiom Battle REST API
 
-## Deploy
+## Status
+
+Deploy on Railway: connect GitHub repo `zhouhailiang0116/axiom-battle-api` and enable GitHub App integration for auto-deploy.
+
+## Run locally
 
 ```bash
-railway login
-railway init
-railway up
+pip install -r requirements.txt
+python main.py
 ```
-
-Or connect GitHub repo for auto-deploy.
 
 ## Endpoints
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/` | GET | Service info |
-| `/battle` | POST | Run axiom battle |
+| `/battle` | POST | Axiom battle |
 | `/arena` | GET | Arena status |
 | `/health` | GET | Health check |
 
-## Example
+## Axioms
 
-```bash
-curl -X POST https://axiom-battle-api.railway.app/battle \
-  -H "Content-Type: application/json" \
-  -d '{"axiom_a": "\u5叙事", "axiom_b": "\u81自由", "attack_type": "reverse"}'
-```
+WuDao 8 Axioms: grow / light / color / layout / narrative / boundary / free / causal
 
 (c) WuDao System
